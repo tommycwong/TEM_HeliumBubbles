@@ -1,4 +1,3 @@
-image: ml_1
 ports:
 - port: 8080
 tasks:
