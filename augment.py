@@ -28,6 +28,8 @@ class cropper:
             step_size (float): step size of sliding window,
             batch_size (int): number of images to return.
         """
+        if np.ndim(image) == 2:
+            image = np.expand_dims(image, axis=2)
         self.image = image
         if np.ndim(mask) == 2:
             mask = np.expand_dims(mask, axis=2)
@@ -42,7 +44,7 @@ class cropper:
         """
         for y in range(0, self.image.shape[0], self.step_size):
             for x in range(0, self.image.shape[1], self.step_size):
-                yield (self.image[y:y + self.window_size[1], x:x + self.window_size[0]],
+                yield (self.image[y:y + self.window_size[1], x:x + self.window_size[0], :],
                        self.mask[y:y + self.window_size[1], x:x + self.window_size[0], :])
 
     def imgen(self):
@@ -51,12 +53,15 @@ class cropper:
         a batch of corresponding labels (ground truth)
         """
         X_batch = np.empty((0, self.window_size[0], self.window_size[1]))
-        y_batch = np.empty((0, self.window_size[0], self.window_size[1], self.mask.shape[-1]))
+        y_batch = np.empty((0, self.window_size[0], self.window_size[1]))
         for window in self.sliding_window():
-            if window[0].shape != self.window_size:
+            if window[0].shape[: -1] != self.window_size:
                 continue
-            X_batch = np.append(X_batch, [window[0]], axis=0)
-            y_batch = np.append(y_batch, [window[1]], axis=0)
+            window_i = np.transpose(window[0], [2, 0, 1])
+            window_l = np.transpose(window[1], [2, 0, 1])
+            X_batch = np.append(X_batch, window_i, axis=0)
+            y_batch = np.append(y_batch, window_l, axis=0)
+
         X_batch, y_batch = shuffle(X_batch, y_batch)
         X_batch = X_batch[0:self.batch_size]
         y_batch = y_batch[0:self.batch_size]
