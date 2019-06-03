@@ -1,4 +1,2 @@
-ports:
-- port: 8080
 tasks:
 - init: python3 -m pip install numpy scipy matplotlib scikit-image scikit-learn opencv-python tensorflow
