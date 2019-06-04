@@ -75,10 +75,11 @@ def get_contours(thresh_image, t_area=5):
 def inference(imgdata, model, thresh=0.5, thresh_blobs=15):
     '''Obtain position of defects from the neural network output for a single image'''
     decoded_img = predict(imgdata, model)
-    decoded_img = threshold_output(decoded_img, thresh)
+    decoded_img = threshold_output(decoded_img[0, :, :, 0], thresh)
     decoded_img = filter_isolated_cells(decoded_img, thresh_blobs)
     defcoord = find_blobs(decoded_img)
     return defcoord
+
 
 def draw_boxes(imgdata, defcoord, bbox=16, figsize_=(6, 6)):
     '''Draws boxes cetered around the extracted dedects'''
