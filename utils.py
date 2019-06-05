@@ -94,3 +94,4 @@ def draw_boxes(imgdata, defcoord, bbox=16, figsize_=(6, 6)):
         ax.add_patch(p)
     ax.grid(False)
     plt.show()
+    return fig
